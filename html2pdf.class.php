@@ -1352,6 +1352,14 @@ class HTML2PDF
         // WARNING : if URL, "allow_url_fopen" must turned to "on" in php.ini
         $infos=@getimagesize($src);
 
+        // support for inline, embedded image data in base64: 'data:image/[format];base64,[base64_data]'
+        // INFO: tcpdf supports streams only in binary format data '@[binary_data]' - convert base64 to binary
+        if (strpos($src, 'data:image') === 0)
+        {
+            $handle = fopen($src, 'r');
+            $src = "@" . fread($handle, 1024 * 1024 * 2);
+        }
+        
         // if the image does not exist, or can not be loaded
         if (count($infos)<2) {
             // if the test is activ => exception
